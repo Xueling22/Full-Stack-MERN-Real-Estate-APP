@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-//Mongoose库的用户模型，用于MongoDB数据库中
+//dMongoose库的用户模型，用于MongoDB数据库中
 const userSchema=new mongoose.Schema({
     username:{
         type:String,
@@ -14,6 +14,10 @@ const userSchema=new mongoose.Schema({
     password:{
         type:String,
         require:true,
+    },
+    avatar:{
+        type:String,
+        default:"https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0="
     }
 },
 {timestamps:true});

@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { useDispatch,useSelector} from 'react-redux' ;
+import { signInStart,signInSuccess,signInFailure } from "../redux/user/userSlice";
+import OAuth from "../components/OAuth";
 
 
 export default function SignUp() {
@@ -9,9 +12,12 @@ export default function SignUp() {
 // useState函数返回一个数组，这个数组包含两个元素：
 // 当前的状态值（在这个例子中是formData），它反映了状态的当前值。
 // 一个让你更新这个状态的函数（在这个例子中是setFormData），你可以调用这个函数来更新状态，更新状态后组件会重新渲染以反映最新的状态。
-  const [error, setError] = useState(null); //error初始值null
-  const [loading, setloading] = useState(false); //loading初始值false
+  // const [error, setError] = useState(null); //error初始值null
+  // const [loading, setloading] = useState(false); //loading初始值false
+
+  const {loading, error} =useSelector((state)=>state.user);
   const navigate=useNavigate();
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -21,7 +27,8 @@ export default function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setloading(true); //异步操作要开始了
+      //setloading(true); //异步操作要开始了
+      dispatch(signInStart()); //分发动作控制用户状态
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
@@ -31,16 +38,17 @@ export default function SignUp() {
       }); //请求的body是将formData状态转换为JSON字符串的结果。等待响应，然后将响应解析为JSON格式的数据。
       const data = await res.json();
       if (data.success === false) {
-        setloading(false);
-        setError(data.message);
+        dispatch(signInFailure(data.message));
         return;
       }
-      setloading(false);
-      setError(null); //清除之前的error信息
+      dispatch(signInSuccess(data));
+      // setloading(false);
+      // setError(null); //清除之前的error信息
       navigate('/');
     } catch (error) {
-      setloading(false);
-      setError(error.message);
+      dispatch(signInFailure(error.message));
+      // setloading(false);
+      // setError(error.message);
     }
   };
   return (
@@ -67,6 +75,7 @@ export default function SignUp() {
         >
           {loading ? "Loading..." : "Sign In"}
         </button>
+        <OAuth></OAuth>
       </form>
       <div className="flex gap-2 mt-5">
         <p>Dont have an account?</p>
